@@ -19,4 +19,3 @@ Train and evaluate the model:
 ```
 python3 train.py
 ```
-# LSPM
