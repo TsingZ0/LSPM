@@ -2,8 +2,8 @@
 This is the implementation for the paper: Online Personalized Next-Item Recommendation via Long Short Term Preference Learning
 
 ## Environments
-- Python >= 3.5
-- Tensorflow 1.8.0
+- Python >= 3.6
+- Tensorflow 1.15.0
 - numpy
 - pandas
 
