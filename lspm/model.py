@@ -53,8 +53,8 @@ class Model(object):
     s_emb = tf.reduce_sum(tf.multiply(is_emb, D), 1)
     p = u_emb + tf.multiply(self.config['alpha'], s_emb) 
 
-    self.r_i = tf.reduce_mean(tf.matmul(p, hi_emb, transpose_b=True), 1)
-    self.r_j = tf.reduce_mean(tf.matmul(p, hj_emb, transpose_b=True), 1)
+    self.r_i = tf.reduce_sum(tf.multiply(u_emb, hi_emb), 1)
+    self.r_j = tf.reduce_sum(tf.multiply(u_emb, hj_emb), 1)
 
     self.x = self.r_i - self.r_j
 
@@ -94,7 +94,7 @@ class Model(object):
         ])
 
     self.loss = tf.reduce_sum(
-        -tf.math.log(tf.math.sigmoid(self.x))
+        -tf.math.log(tf.clip_by_value(tf.math.sigmoid(self.x), 1e-8, 1.0))
         ) + self.config['regulation_rate'] * l2_norm
 
     # self.train_summary = tf.summary.merge([

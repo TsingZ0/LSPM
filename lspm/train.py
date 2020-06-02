@@ -17,10 +17,9 @@ tf.set_random_seed(1234)
 
 # pylint: disable=line-too-long
 # Network parameters
-tf.app.flags.DEFINE_float('dropout', 0.0, 'Dropout probability(0.0: no dropout)')
-tf.app.flags.DEFINE_float('regulation_rate', 0.01, 'L2 regulation rate')
+tf.app.flags.DEFINE_float('regulation_rate', 0.00005, 'L2 regulation rate')
 tf.app.flags.DEFINE_integer('embedding_size', 32, 'Id embedding size')
-tf.app.flags.DEFINE_integer('k', 5, 'Recent k items')
+tf.app.flags.DEFINE_integer('k', 10, 'Recent k items')
 tf.app.flags.DEFINE_float('alpha', 1.0, 'Weight of short preference')
 # Training parameters
 tf.app.flags.DEFINE_boolean('from_scratch', True, 'Romove model_dir, and train from scratch, default: False')
