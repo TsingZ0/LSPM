@@ -14,12 +14,16 @@ from model import Model
 random.seed(1234)
 np.random.seed(1234)
 tf.set_random_seed(1234)
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
+time_line = []
+auc_value = []
 
 # pylint: disable=line-too-long
 # Network parameters
-tf.app.flags.DEFINE_float('regulation_rate', 0.00005, 'L2 regulation rate')
+tf.app.flags.DEFINE_float('regulation_rate', 0.01, 'L2 regulation rate')
 tf.app.flags.DEFINE_integer('embedding_size', 32, 'Id embedding size')
-tf.app.flags.DEFINE_integer('k', 10, 'Recent k items')
+tf.app.flags.DEFINE_integer('k', 5, 'Recent k items')
 tf.app.flags.DEFINE_float('alpha', 1.0, 'Weight of short preference')
 # Training parameters
 tf.app.flags.DEFINE_boolean('from_scratch', True, 'Romove model_dir, and train from scratch, default: False')
@@ -36,7 +40,7 @@ tf.app.flags.DEFINE_integer('display_freq', 100, 'Display training status every 
 tf.app.flags.DEFINE_integer('eval_freq', 1000, 'Display training status every this iteration')
 
 # Runtime parameters
-tf.app.flags.DEFINE_string('cuda_visible_devices', '0', 'Choice which GPU to use')
+tf.app.flags.DEFINE_string('cuda_visible_devices', '3', 'Choice which GPU to use')
 tf.app.flags.DEFINE_float('per_process_gpu_memory_fraction', 0.0, 'Gpu memory use fraction, 0.0 for allow_growth=True')
 # pylint: enable=line-too-long
 
@@ -173,6 +177,10 @@ def train():
 
         if model.global_step.eval() % FLAGS.eval_freq == 0:
           test_auc = eval_auc(sess, test_set, model, config)
+          
+          time_line.append(time.time()-start_time)
+          auc_value.append(test_auc)
+
           print('Epoch %d Global_step %d\tTrain_loss: %.4f\tEval_auc: %.4f\t' %
                 (model.global_epoch_step.eval(), model.global_step.eval(),
                  avg_loss / FLAGS.eval_freq, test_auc),
@@ -195,7 +203,7 @@ def train():
               best_prec[i] = prec[i]
             if recall[i] > best_recall[i]:
               best_recall[i] = recall[i]
-          if test_auc > 0.8 and test_auc > best_auc:
+          if test_auc > 0.7 and test_auc > best_auc:
             best_auc = test_auc
             model.save(sess)
 
@@ -221,6 +229,9 @@ def train():
 
 def main(_):
   train()
+  with open('training_time.pkl', 'wb') as f:
+    pickle.dump((time_line, auc_value), f, pickle.HIGHEST_PROTOCOL)
 
 if __name__ == '__main__':
   tf.app.run()
+  

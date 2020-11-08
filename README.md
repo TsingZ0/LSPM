@@ -2,13 +2,13 @@
 This is the implementation for the paper: Online Personalized Next-Item Recommendation via Long Short Term Preference Learning
 
 ## Environments
-- Python >= 3.6
-- Tensorflow 1.15.0
-- numpy
-- pandas
+- Python=3.5
+- Tensorflow=1.8.0
+- numpy=1.14.2
+- pandas=0.24.1
 
 ## Datasets
-The datasets are the same as TLSAN.
+The raw data are the same as TLSAN.
 
 ## How to run the codes
 Build dataset:

@@ -32,12 +32,8 @@ class DataInput:
     kk = 0
     for t in ts:
       length = len(t[1])
-      if length > self.k:
-        for l in range(self.k):
-          hist_i[kk][l] = t[1][length-self.k+l]
-      else:
-        for l in range(length):
-          hist_i[kk][l] = t[1][l]
+      for l in range(min(length, self.k)):
+        hist_i[kk][self.k-l-1] = t[1][length-l-1]
       kk += 1
 
     return self.i, (u, i, j, hist_i)
@@ -74,12 +70,8 @@ class DataInputTest:
     kk = 0
     for t in ts:
       length = len(t[1])
-      if length > self.k:
-        for l in range(self.k):
-          hist_i[kk][l] = t[1][length-self.k+l]
-      else:
-        for l in range(length):
-          hist_i[kk][l] = t[1][l]
+      for l in range(min(length, self.k)):
+        hist_i[kk][self.k-l-1] = t[1][length-l-1]
       kk += 1
 
     return self.i, (u, i, j, hist_i)

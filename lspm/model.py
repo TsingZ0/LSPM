@@ -37,24 +37,27 @@ class Model(object):
     item_emb_w = tf.get_variable(
         "item_emb_w",
         [self.config['item_count'], self.config['embedding_size']])
-    user_emb_w = tf.get_variable(
-        "user_emb_w",
+    short_w = tf.get_variable(
+        "short_w",
+        [self.config['item_count'], self.config['embedding_size']])
+    long_w = tf.get_variable(
+        "long_w",
         [self.config['user_count'], self.config['embedding_size']])
     D = [1.0 / (x+1) for x in range(self.config['k'])]
     D.reverse()
     D = tf.convert_to_tensor(D)
     D = tf.tile(tf.expand_dims(D, -1), [1, self.config['embedding_size']])
 
-    is_emb = tf.nn.embedding_lookup(item_emb_w, self.s)
+    is_emb = tf.nn.embedding_lookup(short_w, self.s)
     hi_emb = tf.nn.embedding_lookup(item_emb_w, self.i)
     hj_emb = tf.nn.embedding_lookup(item_emb_w, self.j)
-    u_emb = tf.nn.embedding_lookup(user_emb_w, self.u)
+    u_emb = tf.nn.embedding_lookup(long_w, self.u)
 
     s_emb = tf.reduce_sum(tf.multiply(is_emb, D), 1)
     p = u_emb + tf.multiply(self.config['alpha'], s_emb) 
 
-    self.r_i = tf.reduce_sum(tf.multiply(u_emb, hi_emb), 1)
-    self.r_j = tf.reduce_sum(tf.multiply(u_emb, hj_emb), 1)
+    self.r_i = tf.reduce_sum(tf.multiply(p, hi_emb), 1)
+    self.r_j = tf.reduce_sum(tf.multiply(p, hj_emb), 1)
 
     self.x = self.r_i - self.r_j
 
@@ -99,7 +102,7 @@ class Model(object):
 
     # self.train_summary = tf.summary.merge([
     #     tf.summary.histogram('embedding/1_item_emb', item_emb_w),
-    #     tf.summary.histogram('embedding/2_user_emb', user_emb_w),
+    #     tf.summary.histogram('embedding/2_user_emb', long_w),
     #     tf.summary.scalar('L2_norm Loss', l2_norm),
     #     tf.summary.scalar('Training Loss', self.loss),
     #     ])
